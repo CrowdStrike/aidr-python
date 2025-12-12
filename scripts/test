@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+cd -- "$(dirname -- "$0")/.."
+
+pnpx start-server-and-test --expect 404 \
+  "pnpx @stoplight/prism-cli mock -d --json-schema-faker-fillProperties=false ./specs/ai-guard.openapi.json" \
+  4010 \
+  "uv run pytest tests/test_ai_guard.py"
+
