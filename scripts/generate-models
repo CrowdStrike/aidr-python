@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -e
+
+cd -- "$(dirname -- "$0")/.."
+
+uvx --from datamodel-code-generator datamodel-codegen \
+    --all-exports-scope recursive \
+    --custom-file-header "# ruff: noqa: E501,UP007,UP045" \
+    --collapse-root-models \
+    --enum-field-as-literal all \
+    --output-model-type pydantic_v2.BaseModel \
+    --target-python-version 3.13 \
+    --use-annotated \
+    --use-field-description \
+    --use-schema-description \
+    --use-standard-collections \
+    --input $1 \
+    --output models.py
