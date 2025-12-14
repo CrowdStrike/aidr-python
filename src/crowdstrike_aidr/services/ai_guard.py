@@ -16,6 +16,8 @@ def _transform_typeddict(data: Mapping[str, object]) -> Mapping[str, object]:
 
 
 class AIGuard(SyncAPIClient):
+    _service_name: str = "aiguard"
+
     def guard_chat_completions(
         self,
         *,

@@ -80,19 +80,20 @@ def _merge_mappings(
 
 class BaseClient[T: httpx.Client | httpx.AsyncClient]:
     _client: T
+    _service_name: str
 
     def __init__(
         self,
         *,
-        base_url: str | URL,
+        base_url_template: str,
         max_retries: int = DEFAULT_MAX_RETRIES,
         timeout: float | Timeout | None = DEFAULT_TIMEOUT,
         custom_headers: Mapping[str, str] | None = None,
         custom_query: Mapping[str, object] | None = None,
     ) -> None:
-        self._base_url = URL(base_url)
         self.max_retries = max_retries
         self.timeout = timeout
+        self._base_url_template = base_url_template
         self._custom_headers = custom_headers or {}
         self._custom_query = custom_query or {}
 
@@ -102,11 +103,8 @@ class BaseClient[T: httpx.Client | httpx.AsyncClient]:
 
     @property
     def base_url(self) -> URL:
-        return self._base_url
-
-    @base_url.setter
-    def base_url(self, url: URL | str) -> None:
-        self._base_url = url if isinstance(url, URL) else URL(url)
+        resolved_url = self._base_url_template.replace("{SERVICE_NAME}", self._service_name)
+        return URL(resolved_url)
 
     @property
     def default_headers(self) -> dict[str, str | Omit]:
@@ -191,8 +189,9 @@ class BaseClient[T: httpx.Client | httpx.AsyncClient]:
 
         merge_url = URL(url)
         if merge_url.is_relative_url:
-            merge_raw_path = self.base_url.raw_path + merge_url.raw_path.lstrip(b"/")
-            return self.base_url.copy_with(raw_path=merge_raw_path)
+            base_url = self.base_url
+            merge_raw_path = base_url.raw_path + merge_url.raw_path.lstrip(b"/")
+            return base_url.copy_with(raw_path=merge_raw_path)
 
         return merge_url
 
@@ -241,7 +240,7 @@ class SyncAPIClient(BaseClient[httpx.Client]):
     def __init__(
         self,
         *,
-        base_url: str | URL,
+        base_url_template: str,
         max_retries: int = DEFAULT_MAX_RETRIES,
         timeout: float | Timeout = DEFAULT_TIMEOUT,
         http_client: httpx.Client | None = None,
@@ -255,12 +254,13 @@ class SyncAPIClient(BaseClient[httpx.Client]):
 
         super().__init__(
             timeout=cast(Timeout, timeout),
-            base_url=base_url,
+            base_url_template=base_url_template,
             max_retries=max_retries,
             custom_headers=custom_headers,
             custom_query=custom_query,
         )
-        self._client = http_client or SyncHttpxClientWrapper(base_url=self._base_url, timeout=self.timeout)
+        resolved_base_url = self.base_url
+        self._client = http_client or SyncHttpxClientWrapper(base_url=resolved_base_url, timeout=self.timeout)
 
     def _post(
         self,
