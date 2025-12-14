@@ -10,12 +10,12 @@ from crowdstrike_aidr.models.ai_guard import GuardChatCompletionsResponse
 
 from .utils import assert_matches_type
 
-base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
+base_url_template = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 
 
 @pytest.fixture(scope="session")
 def client(request: pytest.FixtureRequest) -> Iterator[AIGuard]:
-    yield AIGuard(base_url=base_url)
+    yield AIGuard(base_url_template=base_url_template)
 
 
 def test_guard_chat_completions(client: AIGuard) -> None:
