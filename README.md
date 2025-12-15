@@ -17,7 +17,10 @@ Python v3.13 or greater.
 ```python
 from crowdstrike_aidr import AIGuard
 
-client = AIGuard(base_url_template="https://api.crowdstrike.com/aidr/{SERVICE_NAME}")
+client = AIGuard(
+  base_url_template="https://api.crowdstrike.com/aidr/{SERVICE_NAME}",
+  token="my API token"
+)
 
 response = client.guard_chat_completions(
     guard_input={
@@ -46,13 +49,15 @@ from crowdstrike_aidr import AIGuard
 # Using a float (total timeout in seconds).
 client = AIGuard(
     base_url_template="https://api.crowdstrike.com/aidr/{SERVICE_NAME}",
-    timeout=30.0
+    token="my API token",
+    timeout=30.0,
 )
 
 # Using httpx.Timeout for more granular control.
 client = AIGuard(
     base_url_template="https://api.crowdstrike.com/aidr/{SERVICE_NAME}",
-    timeout=httpx.Timeout(timeout=60.0, connect=10.0)
+    token="my API token",
+    timeout=httpx.Timeout(timeout=60.0, connect=10.0),
 )
 ```
 
@@ -77,17 +82,14 @@ response = client.guard_chat_completions(
 ## Retries
 
 The SDK automatically retries failed requests with exponential backoff. By
-default, the client will retry up to 2 times.
-
-### Client-level retries
-
-Set the maximum number of retries for all requests:
+default, the client will retry up to 2 times. Set `max_retries` during client
+creation to change this.
 
 ```python
 from crowdstrike_aidr import AIGuard
 
 client = AIGuard(
     base_url_template="https://api.crowdstrike.com/aidr/{SERVICE_NAME}",
-    max_retries=5  # Retry up to 5 times
+    max_retries=5  # Retry up to 5 times.
 )
 ```
