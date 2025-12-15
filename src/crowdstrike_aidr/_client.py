@@ -5,7 +5,7 @@ import json
 import time
 from collections.abc import Mapping
 from random import random
-from typing import TYPE_CHECKING, Any, cast, get_origin
+from typing import TYPE_CHECKING, Any, cast, get_origin, override
 
 import httpx
 from httpx import URL, Timeout
@@ -237,11 +237,13 @@ class SyncHttpxClientWrapper(DefaultHttpxClient):
 
 class SyncAPIClient(BaseClient[httpx.Client]):
     _client: httpx.Client
+    _token: str
 
     def __init__(
         self,
         *,
         base_url_template: str,
+        token: str,
         max_retries: int = DEFAULT_MAX_RETRIES,
         timeout: float | Timeout = DEFAULT_TIMEOUT,
         http_client: httpx.Client | None = None,
@@ -260,8 +262,16 @@ class SyncAPIClient(BaseClient[httpx.Client]):
             custom_headers=custom_headers,
             custom_query=custom_query,
         )
+
+        self._token = token
+
         resolved_base_url = self.base_url
         self._client = http_client or SyncHttpxClientWrapper(base_url=resolved_base_url, timeout=self.timeout)
+
+    @property
+    @override
+    def auth_headers(self) -> dict[str, str]:
+        return {"Authorization": f"Bearer {self._token}"}
 
     def _post(
         self,

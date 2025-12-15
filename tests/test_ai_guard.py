@@ -15,7 +15,7 @@ base_url_template = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 
 @pytest.fixture(scope="session")
 def client(request: pytest.FixtureRequest) -> Iterator[AIGuard]:
-    yield AIGuard(base_url_template=base_url_template)
+    yield AIGuard(base_url_template=base_url_template, token="my API token")
 
 
 def test_guard_chat_completions(client: AIGuard) -> None:
