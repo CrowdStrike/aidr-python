@@ -190,7 +190,8 @@ class BaseClient[T: httpx.Client | httpx.AsyncClient]:
         merge_url = URL(url)
         if merge_url.is_relative_url:
             base_url = self.base_url
-            merge_raw_path = base_url.raw_path + merge_url.raw_path.lstrip(b"/")
+            # Ensure exactly one slash separator between base and relative paths
+            merge_raw_path = base_url.raw_path.rstrip(b"/") + b"/" + merge_url.raw_path.lstrip(b"/")
             return base_url.copy_with(raw_path=merge_raw_path)
 
         return merge_url
