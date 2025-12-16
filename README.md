@@ -10,7 +10,7 @@ pip install crowdstrike-aidr
 
 ## Requirements
 
-Python v3.13 or greater.
+Python v3.12 or greater.
 
 ## Usage
 

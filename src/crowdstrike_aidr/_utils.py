@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import typing
 from collections.abc import Mapping
-from typing import Annotated, Any, TypeGuard, TypeIs, Union, cast, get_args, get_origin, overload
+from typing import Annotated, Any, TypeGuard, Union, cast, get_args, get_origin, overload
 
 import typing_extensions
+from typing_extensions import TypeIs
 
 from ._types import NotGiven, Omit
 
