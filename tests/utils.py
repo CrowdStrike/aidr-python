@@ -3,11 +3,12 @@ from __future__ import annotations
 import traceback
 import typing
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Literal, TypeGuard, TypeIs, TypeVar, assert_type, cast, get_origin
+from typing import TYPE_CHECKING, Any, Literal, TypeGuard, TypeVar, assert_type, cast, get_origin
 
 import typing_extensions
 from pydantic import AwareDatetime, BaseModel
 from pydantic.v1.typing import get_args, is_union
+from typing_extensions import TypeIs
 
 from crowdstrike_aidr._utils import extract_type_arg, is_annotated_type
 

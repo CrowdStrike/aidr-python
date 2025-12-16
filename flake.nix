@@ -15,13 +15,16 @@
       shell = {pkgs ? import <nixpkgs>}:
         pkgs.mkShellNoCC {
           packages = with pkgs; [
-            python313
+            pnpm
+            python312
             uv
           ];
 
           env = {};
 
-          shellHook = '''';
+          shellHook = ''
+            uv sync --all-extras --dev
+          '';
         };
     };
 }
