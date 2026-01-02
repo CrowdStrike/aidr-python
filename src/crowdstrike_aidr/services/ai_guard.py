@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Literal
+from typing import Any, Literal
 
 import httpx
+from pydantic import BaseModel
 
 from .._client import SyncAPIClient, make_request_options
 from .._types import Body, Headers, NotGiven, Omit, Query, not_given, omit
@@ -11,8 +12,16 @@ from .._utils import is_given
 from ..models.ai_guard import ExtraInfo, GuardChatCompletionsResponse
 
 
-def _transform_typeddict(data: Mapping[str, object]) -> Mapping[str, object]:
-    return {key: value for key, value in data.items() if is_given(value)}
+def _transform_typeddict(data: Mapping[str, object]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in data.items():
+        if is_given(value):
+            # Serialize Pydantic models to dict, excluding None values
+            if isinstance(value, BaseModel):
+                result[key] = value.model_dump(exclude_none=True)
+            else:
+                result[key] = value
+    return result
 
 
 class AIGuard(SyncAPIClient):
