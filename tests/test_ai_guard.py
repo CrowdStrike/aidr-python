@@ -6,7 +6,7 @@ from collections.abc import Iterator
 import pytest
 
 from crowdstrike_aidr import AIGuard
-from crowdstrike_aidr.models.ai_guard import GuardChatCompletionsResponse
+from crowdstrike_aidr.models.ai_guard import ExtraInfo, GuardChatCompletionsResponse
 
 from .utils import assert_matches_type
 
@@ -19,5 +19,8 @@ def client(request: pytest.FixtureRequest) -> Iterator[AIGuard]:
 
 
 def test_guard_chat_completions(client: AIGuard) -> None:
-    response = client.guard_chat_completions(guard_input={"messages": [{"role": "user", "content": "Hello, world!"}]})
+    response = client.guard_chat_completions(
+        guard_input={"messages": [{"role": "user", "content": "Hello, world!"}]},
+        extra_info=ExtraInfo(app_name="app_name"),
+    )
     assert_matches_type(GuardChatCompletionsResponse, response, path=["guard_chat_completions"])
