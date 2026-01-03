@@ -1,18 +1,13 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
 from typing import Literal
 
 import httpx
 
 from .._client import SyncAPIClient, make_request_options
+from .._transform import transform
 from .._types import Body, Headers, NotGiven, Omit, Query, not_given, omit
-from .._utils import is_given
 from ..models.ai_guard import ExtraInfo, GuardChatCompletionsResponse
-
-
-def _transform_typeddict(data: Mapping[str, object]) -> Mapping[str, object]:
-    return {key: value for key, value in data.items() if is_given(value)}
 
 
 class AIGuard(SyncAPIClient):
@@ -83,7 +78,7 @@ class AIGuard(SyncAPIClient):
         """
         return self._post(
             "/v1/guard_chat_completions",
-            body=_transform_typeddict(
+            body=transform(
                 {
                     "guard_input": guard_input,
                     "app_id": app_id,
