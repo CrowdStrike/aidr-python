@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from typing import cast
 
 from pydantic import BaseModel
 
-from ._utils import is_given, is_mapping
+from ._utils import is_given, is_iterable, is_list, is_mapping, is_sequence
 
 
 def _transform_typeddict(data: Mapping[str, object]) -> dict[str, object]:
@@ -37,5 +38,20 @@ def transform(data: object) -> object:
 
     if isinstance(data, BaseModel):
         return data.model_dump(exclude_unset=True, mode="json")
+
+    if (
+        # list[T]
+        is_list(data)
+        # Iterable[T]
+        or (is_iterable(data) and not isinstance(data, str))
+        # Sequence[T]
+        or (is_sequence(data) and not isinstance(data, str))
+    ):
+        # dicts are iterable, but it's an iterable on the keys, so it doesn't
+        # get transformed here.
+        if isinstance(data, dict):
+            return cast(object, data)
+
+        return [transform(d) for d in data]
 
     return data
