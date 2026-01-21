@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import typing
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from typing import Annotated, Any, TypeGuard, Union, cast, get_args, get_origin, overload
 
 import typing_extensions
@@ -64,3 +64,15 @@ def is_annotated_type(typ: type) -> bool:
 
 def is_type_alias_type(tp: Any, /) -> TypeIs[typing_extensions.TypeAliasType]:
     return isinstance(tp, (typing_extensions.TypeAliasType, typing.TypeAliasType))
+
+
+def is_list(obj: object) -> TypeGuard[list[object]]:
+    return isinstance(obj, list)
+
+
+def is_iterable(obj: object) -> TypeGuard[Iterable[object]]:
+    return isinstance(obj, Iterable)
+
+
+def is_sequence(obj: object) -> TypeGuard[Sequence[object]]:
+    return isinstance(obj, Sequence)
