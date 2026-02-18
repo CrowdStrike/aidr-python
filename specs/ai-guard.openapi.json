@@ -44,6 +44,8 @@
                       "$ref": "#/components/schemas/pangea-response"
                     },
                     {
+                      "type": "object",
+                      "required": ["result"],
                       "properties": {
                         "result": {
                           "type": "object",
@@ -51,6 +53,7 @@
                           "properties": {
                             "guard_output": {
                               "type": "object",
+                              "additionalProperties": true,
                               "description": "Updated structured prompt."
                             },
                             "blocked": {
@@ -215,6 +218,133 @@
             },
             "description": "No description provided"
           },
+          "202": {
+            "description": "Asynchronous request in progress",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/pangea-response"
+                    },
+                    {
+                      "$ref": "#/components/schemas/pangea-accepted-response"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/pangea-response"
+                    },
+                    {
+                      "$ref": "#/components/schemas/pangea-validation-errors"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "tags": ["aidr"]
+      }
+    },
+    "/v1/unredact": {
+      "post": {
+        "operationId": "aidr_post_v1_unredact",
+        "summary": "Unredact text or structured JSON",
+        "description": "Decrypt or unredact fpe redactions",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "docs_anchor": "/v1/unredact",
+                "type": "object",
+                "required": ["redacted_data", "fpe_context"],
+                "additionalProperties": false,
+                "properties": {
+                  "redacted_data": {
+                    "description": "Data to unredact"
+                  },
+                  "fpe_context": {
+                    "type": "string",
+                    "format": "base64",
+                    "description": "FPE context used to decrypt and unredact data"
+                  }
+                },
+                "examples": [
+                  {
+                    "redacted_data": {
+                      "telephone": "<PHONE_NUMBER>",
+                      "ssn": "<US_SSN>"
+                    },
+                    "fpe_context": "gAyHpblmIoUXKTiYY8xKiQ=="
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The unredacted data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/pangea-response"
+                    },
+                    {
+                      "properties": {
+                        "result": {
+                          "type": "object",
+                          "required": ["data"],
+                          "properties": {
+                            "data": {
+                              "description": "The unredacted data"
+                            }
+                          },
+                          "examples": [
+                            {
+                              "data": {
+                                "telephone": "(555)-555-5555",
+                                "ssn": "457-55-5462"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Asynchronous request in progress",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/pangea-response"
+                    },
+                    {
+                      "$ref": "#/components/schemas/pangea-accepted-response"
+                    }
+                  ]
+                }
+              }
+            }
+          },
           "400": {
             "description": "Validation errors",
             "content": {
@@ -254,16 +384,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/pangea-response"
-                }
-              }
-            }
-          },
           "202": {
             "description": "Asynchronous request in progress",
             "content": {
@@ -274,6 +394,7 @@
                       "$ref": "#/components/schemas/pangea-response"
                     },
                     {
+                      "required": ["result", "status"],
                       "properties": {
                         "result": {
                           "type": "object",
@@ -288,10 +409,23 @@
                               "type": "string"
                             }
                           }
+                        },
+                        "status": {
+                          "enum": ["Accepted"]
                         }
                       }
                     }
                   ]
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pangea-response"
                 }
               }
             }
@@ -331,9 +465,6 @@
           "summary": {
             "type": "string",
             "description": "Provides a concise and brief overview of the purpose or primary objective of the API endpoint. It serves as a high-level summary or description of the functionality or feature offered by the endpoint."
-          },
-          "result": {
-            "type": "object"
           }
         },
         "examples": [
@@ -440,7 +571,7 @@
                     },
                     "path": {
                       "type": "string",
-                      "description": "The Schema path where the error ocurred",
+                      "description": "The Schema path where the error occurred",
                       "format": "json-pointer"
                     }
                   }
@@ -449,6 +580,35 @@
             }
           }
         }
+      },
+      "pangea-accepted-response": {
+        "$ref": "#/components/schemas/pangea-response",
+        "required": ["status", "result"],
+        "properties": {
+          "status": {
+            "enum": ["Accepted"]
+          },
+          "result": {
+            "type": "object",
+            "required": ["ttl_mins", "retry_counter", "location"],
+            "properties": {
+              "ttl_mins": {
+                "type": "integer",
+                "description": "TTL from now until which results are stored for retrieval"
+              },
+              "retry_counter": {
+                "type": "integer",
+                "description": "Number of retry counts performed so far to fetch the results"
+              },
+              "location": {
+                "type": "string",
+                "description": "The location to check results of the asynchronous request"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
       },
       "aidr-device-status": {
         "type": "string",
@@ -1174,6 +1334,7 @@
           },
           "content": {
             "type": "array",
+            "items": {},
             "description": "Content of the list based on type"
           }
         }
@@ -1184,6 +1345,7 @@
         "properties": {
           "guard_input": {
             "type": "object",
+            "additionalProperties": true,
             "description": "'messages' contains Prompt content and role array in JSON format. The `content` is the multimodel text or image input that will be analyzed.  Additional properties such as 'tools' may be provided for analysis.",
             "examples": [
               {
@@ -1231,7 +1393,7 @@
           "event_type": {
             "type": "string",
             "description": "(AIDR) Event Type.",
-            "enum": [
+            "examples": [
               "input",
               "output",
               "tool_input",
@@ -1306,6 +1468,11 @@
               }
             },
             "additionalProperties": true
+          },
+          "input_fpe_context": {
+            "type": "string",
+            "format": "base64",
+            "description": "FPE (Format Preserving Encryption) context from a previous guard request. When provided, the encrypted input will be unredacted before processing."
           }
         },
         "additionalProperties": false
@@ -2326,7 +2493,7 @@
         "type": "string",
         "anyOf": [
           {
-            "pattern": "^[0-9]+(ns|us|µs|ms|s|m|h)$"
+            "pattern": "^[0-9]+(ns|us|\u00b5s|ms|s|m|h)$"
           },
           {
             "pattern": "^$"
@@ -2636,17 +2803,6 @@
         "examples": ["2022-10-01T19:07:31.314Z"],
         "format": "date-time"
       },
-      "aird-timestamp-nullable": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/authn-timestamp"
-          },
-          {
-            "type": "null"
-          }
-        ],
-        "description": "A time in ISO-8601 format or null"
-      },
       "aidr-resource-field-mapping": {
         "type": "object",
         "description": "Define field name and path mapping to extract from the log",
@@ -2928,7 +3084,7 @@
           "interval": {
             "type": "string",
             "enum": ["hourly", "daily", "weekly", "monthly", "yearly"],
-            "description": "Bucket size for time‐series aggregation"
+            "description": "Bucket size for time\u2010series aggregation"
           },
           "filters": {
             "type": "object",
@@ -2967,7 +3123,8 @@
               "^[a-zA-Z0-9_]+(__(contains|in|not_in))?$": {
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "pattern": "^[^'\"`;\\\\/(=)]+$"
                 }
               }
             },
@@ -2995,7 +3152,7 @@
           },
           "group_by": {
             "type": "array",
-            "description": "Optional list of tag keys to group by (for bar‑chart or Sankey)",
+            "description": "Optional list of tag keys to group by (for bar\u2011chart or Sankey)",
             "items": {
               "type": "string",
               "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,63}$"
@@ -3003,7 +3160,8 @@
           },
           "order_by": {
             "type": "string",
-            "description": "field to sort by"
+            "description": "field to sort by",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_.]{0,63}$"
           },
           "order": {
             "type": "string",
@@ -3037,7 +3195,7 @@
           "interval": {
             "type": "string",
             "enum": ["hourly", "daily", "weekly", "monthly", "yearly"],
-            "description": "Bucket size for time‐series aggregation"
+            "description": "Bucket size for time\u2010series aggregation"
           },
           "aggregate_fields": {
             "type": "array",
@@ -3104,7 +3262,8 @@
               "^[a-zA-Z0-9_]+(__(contains|in|not_in))?$": {
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "pattern": "^[^'\"`;\\\\/(=)]+$"
                 }
               }
             },
@@ -3112,7 +3271,7 @@
           },
           "group_by": {
             "type": "array",
-            "description": "Optional list of tag keys to group by (for bar‑chart or Sankey)",
+            "description": "Optional list of tag keys to group by (for bar\u2011chart or Sankey)",
             "items": {
               "type": "string",
               "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,63}$"
@@ -3120,7 +3279,8 @@
           },
           "order_by": {
             "type": "string",
-            "description": "field to sort by"
+            "description": "field to sort by",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_.]{0,63}$"
           },
           "order": {
             "type": "string",
@@ -3253,11 +3413,64 @@
           }
         }
       },
-      "authn-timestamp": {
-        "type": "string",
-        "description": "A time in ISO-8601 format",
-        "examples": ["2022-10-01T19:07:31.314Z"],
-        "format": "date-time"
+      "access-rule-settings": {
+        "type": "object",
+        "description": "Configuration for an individual access rule used in an AI Guard recipe. Each rule defines its matching logic and the action to apply when the logic evaluates to true.",
+        "properties": {
+          "rule_key": {
+            "type": "string",
+            "pattern": "^([a-zA-Z0-9_][a-zA-Z0-9/|_]*)$",
+            "description": "Unique identifier for this rule. Should be user-readable and consistent across recipe updates."
+          },
+          "name": {
+            "type": "string",
+            "description": "Display label for the rule shown in user interfaces."
+          },
+          "state": {
+            "type": "string",
+            "enum": ["block", "report"],
+            "description": "Action to apply if the rule matches. Use 'block' to stop further processing or 'report' to simply log the match."
+          },
+          "logic": {
+            "type": "object",
+            "description": "JSON Logic condition that determines whether this rule matches.",
+            "additionalProperties": true
+          }
+        },
+        "required": ["rule_key", "name", "state", "logic"],
+        "additionalProperties": false,
+        "examples": [
+          {
+            "rule_key": "block_outside_us",
+            "name": "Block Outside US",
+            "state": "block",
+            "logic": {
+              "and": [
+                {
+                  "!=": [
+                    {
+                      "var": "user.source_location"
+                    },
+                    "US"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "rule_key": "report_high_token_usage",
+            "name": "Report Large Requests",
+            "state": "report",
+            "logic": {
+              ">": [
+                {
+                  "var": "model.request_token_count"
+                },
+                1000
+              ]
+            }
+          }
+        ]
       },
       "access-rule-result": {
         "type": "object",
@@ -3322,59 +3535,6 @@
           }
         ]
       },
-      "recipe-config": {
-        "type": "object",
-        "description": "Defines an AI Guard recipe - a named configuration of detectors and redaction settings used to analyze and protect data flows in AI-powered applications.\n\nRecipes specify which detectors are active, how they behave, and may include reusable settings such as FPE tweaks.\n\nFor details, see the [AI Guard Recipes](https://pangea.cloud/docs/ai-guard/recipes) documentation.",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Human-readable name of the recipe"
-          },
-          "description": {
-            "type": "string",
-            "description": "Detailed description of the recipe's purpose or use case"
-          },
-          "version": {
-            "type": "string",
-            "description": "Optional version identifier for the recipe. Can be used to track changes.",
-            "default": "v1",
-            "examples": ["v1"]
-          },
-          "detectors": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/detector-settings"
-              }
-            ],
-            "description": "Settings for [AI Guard Detectors](https://pangea.cloud/docs/ai-guard/recipes#detectors), including which detectors to enable and how they behave"
-          },
-          "access_rules": {
-            "type": "array",
-            "description": "Configuration for access rules used in an AI Guard recipe.",
-            "items": {
-              "$ref": "#/components/schemas/access-rule-settings"
-            }
-          },
-          "connector_settings": {
-            "type": "object",
-            "description": "Connector-level Redact configuration. These settings allow you to define reusable redaction parameters, such as FPE tweak value.",
-            "properties": {
-              "redact": {
-                "type": "object",
-                "description": "Settings for Redact integration at the recipe level",
-                "properties": {
-                  "fpe_tweak_vault_secret_id": {
-                    "type": "string",
-                    "description": "ID of a Vault secret containing the tweak value used for Format-Preserving Encryption (FPE). Enables deterministic encryption, ensuring that identical inputs produce consistent encrypted outputs."
-                  }
-                }
-              }
-            }
-          }
-        },
-        "required": ["name", "description"],
-        "additionalProperties": false
-      },
       "detector-settings": {
         "type": "array",
         "description": "Configuration for individual detectors used in an AI Guard recipe. Each entry specifies the detector to use, its enabled state, detector-specific settings, and the [action](https://pangea.cloud/docs/ai-guard/recipes#actions) to apply when detections occur.",
@@ -3436,6 +3596,59 @@
           "required": ["detector_name", "state", "settings"],
           "additionalProperties": false
         }
+      },
+      "recipe-config": {
+        "type": "object",
+        "description": "Defines an AI Guard recipe - a named configuration of detectors and redaction settings used to analyze and protect data flows in AI-powered applications.\n\nRecipes specify which detectors are active, how they behave, and may include reusable settings such as FPE tweaks.\n\nFor details, see the [AI Guard Recipes](https://pangea.cloud/docs/ai-guard/recipes) documentation.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Human-readable name of the recipe"
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed description of the recipe's purpose or use case"
+          },
+          "version": {
+            "type": "string",
+            "description": "Optional version identifier for the recipe. Can be used to track changes.",
+            "default": "v1",
+            "examples": ["v1"]
+          },
+          "detectors": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/detector-settings"
+              }
+            ],
+            "description": "Settings for [AI Guard Detectors](https://pangea.cloud/docs/ai-guard/recipes#detectors), including which detectors to enable and how they behave"
+          },
+          "access_rules": {
+            "type": "array",
+            "description": "Configuration for access rules used in an AI Guard recipe.",
+            "items": {
+              "$ref": "#/components/schemas/access-rule-settings"
+            }
+          },
+          "connector_settings": {
+            "type": "object",
+            "description": "Connector-level Redact configuration. These settings allow you to define reusable redaction parameters, such as FPE tweak value.",
+            "properties": {
+              "redact": {
+                "type": "object",
+                "description": "Settings for Redact integration at the recipe level",
+                "properties": {
+                  "fpe_tweak_vault_secret_id": {
+                    "type": "string",
+                    "description": "ID of a Vault secret containing the tweak value used for Format-Preserving Encryption (FPE). Enables deterministic encryption, ensuring that identical inputs produce consistent encrypted outputs."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "required": ["name", "description"],
+        "additionalProperties": false
       },
       "rule-redaction-config": {
         "type": "object",
@@ -3581,299 +3794,6 @@
             "description": "Alphabet used for Format-Preserving Encryption (FPE). Determines the character set for encryption."
           }
         }
-      },
-      "access-rule-settings": {
-        "type": "object",
-        "description": "Configuration for an individual access rule used in an AI Guard recipe. Each rule defines its matching logic and the action to apply when the logic evaluates to true.",
-        "properties": {
-          "rule_key": {
-            "type": "string",
-            "pattern": "^([a-zA-Z0-9_][a-zA-Z0-9/|_]*)$",
-            "description": "Unique identifier for this rule. Should be user-readable and consistent across recipe updates."
-          },
-          "name": {
-            "type": "string",
-            "description": "Display label for the rule shown in user interfaces."
-          },
-          "state": {
-            "type": "string",
-            "enum": ["block", "report"],
-            "description": "Action to apply if the rule matches. Use 'block' to stop further processing or 'report' to simply log the match."
-          },
-          "logic": {
-            "type": "object",
-            "description": "JSON Logic condition that determines whether this rule matches.",
-            "additionalProperties": true
-          }
-        },
-        "required": ["rule_key", "name", "state", "logic"],
-        "additionalProperties": false,
-        "examples": [
-          {
-            "rule_key": "block_outside_us",
-            "name": "Block Outside US",
-            "state": "block",
-            "logic": {
-              "and": [
-                {
-                  "!=": [
-                    {
-                      "var": "user.source_location"
-                    },
-                    "US"
-                  ]
-                }
-              ]
-            }
-          },
-          {
-            "rule_key": "report_high_token_usage",
-            "name": "Report Large Requests",
-            "state": "report",
-            "logic": {
-              ">": [
-                {
-                  "var": "model.request_token_count"
-                },
-                1000
-              ]
-            }
-          }
-        ]
-      },
-      "language-result": {
-        "type": "object",
-        "properties": {
-          "action": {
-            "type": "string",
-            "description": "The action taken by this Detector"
-          },
-          "language": {
-            "type": "string"
-          }
-        }
-      },
-      "redact-entity-result": {
-        "type": "object",
-        "properties": {
-          "entities": {
-            "type": "array",
-            "description": "Detected redaction rules.",
-            "items": {
-              "type": "object",
-              "required": ["type", "value", "redacted", "action"],
-              "properties": {
-                "action": {
-                  "type": "string",
-                  "description": "The action taken on this Entity"
-                },
-                "type": {
-                  "type": "string"
-                },
-                "value": {
-                  "type": "string"
-                },
-                "redacted": {
-                  "type": "boolean"
-                },
-                "start_pos": {
-                  "type": "integer",
-                  "minimum": 0
-                }
-              }
-            }
-          }
-        }
-      },
-      "malicious-entity-action": {
-        "type": "string",
-        "enum": ["report", "defang", "disabled", "block"]
-      },
-      "pii-entity-action": {
-        "type": "string",
-        "enum": [
-          "disabled",
-          "report",
-          "block",
-          "mask",
-          "partial_masking",
-          "replacement",
-          "hash",
-          "fpe"
-        ]
-      },
-      "guard-chat-completions-response": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/pangea-response"
-          },
-          {
-            "properties": {
-              "result": {
-                "type": "object",
-                "required": ["detectors"],
-                "properties": {
-                  "guard_output": {
-                    "type": "object",
-                    "description": "Updated structured prompt."
-                  },
-                  "blocked": {
-                    "type": "boolean",
-                    "description": "Whether or not the prompt triggered a block detection."
-                  },
-                  "transformed": {
-                    "type": "boolean",
-                    "description": "Whether or not the original input was transformed."
-                  },
-                  "policy": {
-                    "type": "string",
-                    "description": "The Policy that was used."
-                  },
-                  "detectors": {
-                    "type": "object",
-                    "description": "Result of the policy analyzing and input prompt.",
-                    "properties": {
-                      "malicious_prompt": {
-                        "type": "object",
-                        "properties": {
-                          "detected": {
-                            "type": "boolean",
-                            "description": "Whether or not the Malicious Prompt was detected."
-                          },
-                          "data": {
-                            "type": "object",
-                            "description": "Details about the analyzers.",
-                            "$ref": "#/components/schemas/aidr-prompt-injection-result"
-                          }
-                        }
-                      },
-                      "confidential_and_pii_entity": {
-                        "type": "object",
-                        "properties": {
-                          "detected": {
-                            "type": "boolean",
-                            "description": "Whether or not the PII Entities were detected."
-                          },
-                          "data": {
-                            "type": "object",
-                            "description": "Details about the detected entities.",
-                            "$ref": "#/components/schemas/aidr-redact-entity-result"
-                          }
-                        }
-                      },
-                      "malicious_entity": {
-                        "type": "object",
-                        "properties": {
-                          "detected": {
-                            "type": "boolean",
-                            "description": "Whether or not the Malicious Entities were detected."
-                          },
-                          "data": {
-                            "type": "object",
-                            "description": "Details about the detected entities.",
-                            "$ref": "#/components/schemas/aidr-malicious-entity-result"
-                          }
-                        }
-                      },
-                      "custom_entity": {
-                        "type": "object",
-                        "properties": {
-                          "detected": {
-                            "type": "boolean",
-                            "description": "Whether or not the Custom Entities were detected."
-                          },
-                          "data": {
-                            "type": "object",
-                            "description": "Details about the detected entities.",
-                            "$ref": "#/components/schemas/aidr-redact-entity-result"
-                          }
-                        }
-                      },
-                      "secret_and_key_entity": {
-                        "type": "object",
-                        "properties": {
-                          "detected": {
-                            "type": "boolean",
-                            "description": "Whether or not the Secret Entities were detected."
-                          },
-                          "data": {
-                            "type": "object",
-                            "description": "Details about the detected entities.",
-                            "$ref": "#/components/schemas/aidr-redact-entity-result"
-                          }
-                        }
-                      },
-                      "competitors": {
-                        "type": "object",
-                        "properties": {
-                          "detected": {
-                            "type": "boolean",
-                            "description": "Whether or not the Competitors were detected."
-                          },
-                          "data": {
-                            "type": "object",
-                            "description": "Details about the detected entities.",
-                            "$ref": "#/components/schemas/aidr-single-entity-result"
-                          }
-                        }
-                      },
-                      "language": {
-                        "type": "object",
-                        "properties": {
-                          "detected": {
-                            "type": "boolean",
-                            "description": "Whether or not the Languages were detected."
-                          },
-                          "data": {
-                            "type": "object",
-                            "description": "Details about the detected languages.",
-                            "$ref": "#/components/schemas/aidr-language-result"
-                          }
-                        }
-                      },
-                      "topic": {
-                        "type": "object",
-                        "properties": {
-                          "detected": {
-                            "type": "boolean",
-                            "description": "Whether or not the Topics were detected."
-                          },
-                          "data": {
-                            "type": "object",
-                            "description": "Details about the detected topics.",
-                            "$ref": "#/components/schemas/aidr-topic-result"
-                          }
-                        }
-                      },
-                      "code": {
-                        "type": "object",
-                        "properties": {
-                          "detected": {
-                            "type": "boolean",
-                            "description": "Whether or not the Code was detected."
-                          },
-                          "data": {
-                            "type": "object",
-                            "description": "Details about the detected code.",
-                            "$ref": "#/components/schemas/aidr-language-result"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "access_rules": {
-                    "$ref": "#/components/schemas/aidr-access-rules-response"
-                  },
-                  "fpe_context": {
-                    "type": "string",
-                    "format": "base64",
-                    "description": "If an FPE redaction method returned results, this will be the context passed to unredact."
-                  }
-                }
-              }
-            }
-          }
-        ]
       }
     },
     "securitySchemes": {

@@ -6,7 +6,7 @@ from collections.abc import Iterator
 import pytest
 
 from crowdstrike_aidr import AIGuard
-from crowdstrike_aidr.models.ai_guard import ExtraInfo, GuardChatCompletionsResponse
+from crowdstrike_aidr.models.ai_guard import ExtraInfo, GuardChatCompletionsResponse, UnredactResponse
 
 from .utils import assert_matches_type
 
@@ -24,3 +24,11 @@ def test_guard_chat_completions(client: AIGuard) -> None:
         extra_info=ExtraInfo(app_name="app_name"),
     )
     assert_matches_type(GuardChatCompletionsResponse, response, path=["guard_chat_completions"])
+
+
+def test_unredact(client: AIGuard) -> None:
+    response = client.unredact(
+        fpe_context="fpe_context",
+        redacted_data={},
+    )
+    assert_matches_type(UnredactResponse, response, path=["response"])
