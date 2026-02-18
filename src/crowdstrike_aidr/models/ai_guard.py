@@ -2564,6 +2564,15 @@ class GuardChatCompletionsResponse(PangeaResponse):
     result: Optional[GuardChatCompletionsResult] = None
 
 
+class UnredactResponseResult(BaseModel):
+    data: object
+    """The unredacted data"""
+
+
+class UnredactResponse(PangeaResponse):
+    result: Optional[UnredactResponseResult] = None
+
+
 class AidrDeviceCheckResult(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
