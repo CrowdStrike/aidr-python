@@ -718,12 +718,25 @@ class AidrSingleEntityResult(BaseModel):
     """
 
 
+class Language(BaseModel):
+    language: str | None = None
+    confidence: Annotated[float | None, Field(ge=0.0, le=1.0)] = None
+
+
 class AidrLanguageResult(BaseModel):
-    action: Optional[str] = None
+    action: str | None = None
     """
     The action taken by this Detector
     """
-    language: Optional[str] = None
+    languages: list[Language] | None = None
+
+
+class LanguageDetector(BaseModel):
+    detected: bool | None = None
+    """Whether or not the Languages were detected."""
+
+    data: AidrLanguageResult | None = None
+    """Details about the detected languages."""
 
 
 class Topic(BaseModel):
@@ -2122,14 +2135,6 @@ class AccessRuleSettings(BaseModel):
     """
 
 
-class LanguageResult(BaseModel):
-    action: Optional[str] = None
-    """
-    The action taken by this Detector
-    """
-    language: Optional[str] = None
-
-
 class Entity2(BaseModel):
     action: str
     """
@@ -2244,17 +2249,6 @@ class Competitors(BaseModel):
     """
 
 
-class Language(BaseModel):
-    detected: Optional[bool] = None
-    """
-    Whether or not the Languages were detected.
-    """
-    data: Optional[AidrLanguageResult] = None
-    """
-    Details about the detected languages.
-    """
-
-
 class Topic1(BaseModel):
     detected: Optional[bool] = None
     """
@@ -2311,7 +2305,7 @@ class Detectors(BaseModel):
     custom_entity: Optional[CustomEntity] = None
     secret_and_key_entity: Optional[SecretAndKeyEntity] = None
     competitors: Optional[Competitors] = None
-    language: Optional[Language] = None
+    language: Optional[LanguageDetector] = None
     topic: Optional[Topic1] = None
     code: Optional[Code] = None
     emoji: Optional[Emoji] = None
