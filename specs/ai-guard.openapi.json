@@ -11,10 +11,6 @@
   },
   "servers": [
     {
-      "url": "https://aidr.aws.us.pangea.cloud",
-      "description": "Pangea regional service cluster"
-    },
-    {
       "url": "https://aidr.aws.us-west-2.pangea.cloud",
       "description": "Pangea regional service cluster"
     }
@@ -49,7 +45,6 @@
                       "properties": {
                         "result": {
                           "type": "object",
-                          "required": ["detectors"],
                           "properties": {
                             "guard_output": {
                               "type": "object",
@@ -184,6 +179,20 @@
                                     }
                                   }
                                 },
+                                "emoji": {
+                                  "type": "object",
+                                  "properties": {
+                                    "detected": {
+                                      "type": "boolean",
+                                      "description": "Whether or not the Topics were detected."
+                                    },
+                                    "data": {
+                                      "type": "object",
+                                      "description": "Details about the detected emojis.",
+                                      "$ref": "#/components/schemas/aidr-emoji-result"
+                                    }
+                                  }
+                                },
                                 "code": {
                                   "type": "object",
                                   "properties": {
@@ -194,7 +203,7 @@
                                     "data": {
                                       "type": "object",
                                       "description": "Details about the detected code.",
-                                      "$ref": "#/components/schemas/aidr-language-result"
+                                      "$ref": "#/components/schemas/aidr-code-result"
                                     }
                                   }
                                 }
@@ -610,6 +619,224 @@
         },
         "additionalProperties": false
       },
+      "aidr-code-result": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "The action taken by this Detector"
+          },
+          "language": {
+            "type": "string"
+          }
+        }
+      },
+      "aidr-ls-filter": {
+        "type": "string",
+        "maxLength": 5000,
+        "description": "Raw LogScale filter string (optional). Field mapping keys (e.g., actor_id, app_name) are automatically transformed to their actual paths (e.g., Vendor.user_id, Vendor.application_name)",
+        "example": "actor_id=\"user123\" status=\"allowed\""
+      },
+      "aidr-ls-search-metric-request": {
+        "type": "object",
+        "required": ["start_time"],
+        "properties": {
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Start of time range (required)",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "End of time range (optional, defaults to now)",
+            "example": "2026-01-02T00:00:00Z"
+          },
+          "interval": {
+            "type": "string",
+            "enum": ["hourly", "daily", "weekly", "monthly", "yearly"],
+            "description": "Time bucketing interval (optional)",
+            "example": "hourly"
+          },
+          "filter": {
+            "$ref": "#/components/schemas/aidr-ls-filter"
+          },
+          "group_by": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_.-]+$",
+              "maxLength": 100
+            },
+            "maxItems": 20,
+            "description": "Fields to group by (optional)",
+            "example": ["provider", "model_name"]
+          },
+          "order_by": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "maxLength": 100,
+            "description": "Field to sort by (optional)",
+            "example": "count"
+          },
+          "order": {
+            "type": "string",
+            "enum": ["asc", "desc", "ASC", "DESC"],
+            "description": "Sort order (optional, default: asc)",
+            "default": "asc",
+            "example": "desc"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000,
+            "description": "Pagination limit (optional)",
+            "example": 100
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000,
+            "description": "Pagination offset (optional)",
+            "example": 0
+          }
+        }
+      },
+      "aidr-ls-search-status-response": {
+        "type": "object",
+        "required": ["id", "status", "query"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Search job ID",
+            "example": "search-id-123"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["running", "completed", "failed"],
+            "description": "Status of the search",
+            "example": "running"
+          },
+          "event_count": {
+            "type": "integer",
+            "description": "The LogScale query event count"
+          },
+          "has_results": {
+            "type": "boolean",
+            "description": "Check if query has results"
+          },
+          "percent_complete": {
+            "type": "integer",
+            "description": "The LogScale query percent completion data"
+          },
+          "run_duration": {
+            "type": "number",
+            "format": "double",
+            "description": "The LogScale query run duration"
+          }
+        }
+      },
+      "aidr-ls-search-response": {
+        "type": "object",
+        "required": ["id", "status", "query"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Search job ID",
+            "example": "search-id-123"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["running", "completed", "failed"],
+            "description": "Status of the search",
+            "example": "running"
+          },
+          "query": {
+            "type": "string",
+            "description": "The LogScale query that was executed",
+            "example": "event_type=\"AIDRMetricDataEvent\" Vendor.user_id=\"user123\" | bucket(field=@timestamp, span=1h, as=bucket_time) | groupBy([bucket_time, provider], function=[sum(count, as=count), ...])"
+          }
+        }
+      },
+      "aidr-ls-search-metric-aggregation-request": {
+        "type": "object",
+        "required": ["start_time"],
+        "properties": {
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Start of time range (required)",
+            "example": "2026-01-01T00:00:00Z"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "End of time range (optional, defaults to now)",
+            "example": "2026-01-02T00:00:00Z"
+          },
+          "interval": {
+            "type": "string",
+            "enum": ["hourly", "daily", "weekly", "monthly", "yearly"],
+            "description": "Time bucketing interval (optional)",
+            "example": "daily"
+          },
+          "aggregate_fields": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_.-]+$",
+              "maxLength": 100
+            },
+            "description": "Fields for distinct count aggregations (optional). Field mapping keys are automatically transformed to their actual paths",
+            "example": ["actor_id", "app_name", "provider"]
+          },
+          "filter": {
+            "$ref": "#/components/schemas/aidr-ls-filter"
+          },
+          "group_by": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_.-]+$",
+              "maxLength": 100
+            },
+            "maxItems": 20,
+            "description": "Fields to group by (optional)",
+            "example": ["provider"]
+          },
+          "order_by": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "maxLength": 100,
+            "description": "Field to sort by (optional)",
+            "example": "actor_id"
+          },
+          "order": {
+            "type": "string",
+            "enum": ["asc", "desc", "ASC", "DESC"],
+            "description": "Sort order (optional, default: asc)",
+            "default": "asc",
+            "example": "desc"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000,
+            "description": "Pagination limit (optional, default: 100)",
+            "default": 100,
+            "example": 100
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000,
+            "description": "Pagination offset (optional, default: 0)",
+            "default": 0,
+            "example": 0
+          }
+        }
+      },
       "aidr-device-status": {
         "type": "string",
         "description": "Device status. Allowed values are active, pending, disabled",
@@ -626,6 +853,26 @@
             "format": "ipv6"
           }
         ]
+      },
+      "aidr-audit-datetimerel": {
+        "type": "string",
+        "description": "An RFC-3339 formatted timestamp, or relative time adjustment from the current time.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/aidr-audit-duration"
+          },
+          {
+            "description": "Absolute timestamp.",
+            "pattern": "^\\d{4}-\\d{1,2}-\\d{1,2}T\\d{1,2}:\\d{1,2}:\\d{1,2}(.\\d{1,6})?([\\+\\-]\\d{1,2}(:?\\d{1,2})?|Z)?$"
+          }
+        ],
+        "maxLength": 128,
+        "examples": ["2022-01-02T01:02:03Z", "7d", "1day", "120min", "2months"]
+      },
+      "aidr-audit-duration": {
+        "description": "A period of time.",
+        "type": "string",
+        "pattern": "^(\\d+)(d|da|day|days|h|hour|hr|hrs|hours|mi|min|mins|minute|minutes|mo|mon|month|months|s|sec|secs|second|seconds|w|week|weeks|y|year|years)$"
       },
       "aidr-device": {
         "type": "object",
@@ -675,6 +922,9 @@
           },
           "access_token": {
             "$ref": "#/components/schemas/aidr-device-token-info"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/aidr-device-policy-info"
           }
         }
       },
@@ -693,6 +943,23 @@
             "type": "string",
             "format": "date-time",
             "description": "Timestamp when the record when token is created (RFC 3339 format)"
+          }
+        }
+      },
+      "aidr-device-policy-info": {
+        "type": "object",
+        "properties": {
+          "guarded_domains": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "The domain of a site to be check by the device."
+            }
+          },
+          "last_updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the policy was last updated"
           }
         }
       },
@@ -745,7 +1012,8 @@
         "description": "client generated unique ID.",
         "type": "string",
         "minLength": 1,
-        "maxLength": 32
+        "maxLength": 512,
+        "pattern": "^[a-zA-Z0-9:*/_={}-]+$"
       },
       "aidr-device-search": {
         "type": "object",
@@ -860,6 +1128,42 @@
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/aidr-device-status"
+                }
+              },
+              "user_id": {
+                "description": "Only records where user_id is equal to the value",
+                "type": "string"
+              },
+              "user_id__contains": {
+                "description": "Only records where user_id includes each substring.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "user_id__in": {
+                "description": "Only records where user_id equals one of the provided substrings.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "last_used_ip": {
+                "description": "Only records where last_used_ip is equal to the value",
+                "type": "string"
+              },
+              "last_used_ip__contains": {
+                "description": "Only records where last_used_ip includes each substring.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "last_used_ip__in": {
+                "description": "Only records where last_used_ip equals one of the provided substrings.",
+                "type": "array",
+                "items": {
+                  "type": "string"
                 }
               }
             }
@@ -1345,7 +1649,6 @@
         "properties": {
           "guard_input": {
             "type": "object",
-            "additionalProperties": true,
             "description": "'messages' contains Prompt content and role array in JSON format. The `content` is the multimodel text or image input that will be analyzed.  Additional properties such as 'tools' may be provided for analysis.",
             "examples": [
               {
@@ -1422,13 +1725,13 @@
                 "type": "string",
                 "description": "Version of the source application/agent."
               },
-              "actor_name": {
+              "user_name": {
                 "type": "string",
                 "description": "Name of subject actor/service account."
               },
-              "actor_group": {
+              "user_group": {
                 "type": "string",
-                "description": "The group of subject actor."
+                "description": "The group of subject user/actor."
               },
               "source_region": {
                 "type": "string",
@@ -1582,8 +1885,22 @@
             "type": "string",
             "description": "The action taken by this Detector"
           },
-          "language": {
-            "type": "string"
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "language": {
+                  "type": "string"
+                },
+                "confidence": {
+                  "type": "number",
+                  "format": "float",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
           }
         }
       },
@@ -1606,6 +1923,29 @@
                 },
                 "confidence": {
                   "type": "number"
+                }
+              }
+            }
+          }
+        }
+      },
+      "aidr-emoji-result": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "The action taken by this Detector"
+          },
+          "emojis": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "slug": {
+                  "type": "string"
+                },
+                "char": {
+                  "type": "string"
                 }
               }
             }
@@ -1639,7 +1979,7 @@
           "schema_version": {
             "type": "string",
             "description": "The schema version used for the policy definition",
-            "enum": ["v1.1"]
+            "enum": ["v1.1", "v1.2"]
           },
           "detector_settings": {
             "allOf": [
@@ -1730,7 +2070,7 @@
           "schema_version": {
             "type": "string",
             "description": "The schema version used for the policy definition",
-            "enum": ["v1.1"]
+            "enum": ["v1.1", "v1.2"]
           },
           "revision": {
             "type": "number",
@@ -3794,6 +4134,424 @@
             "description": "Alphabet used for Format-Preserving Encryption (FPE). Determines the character set for encryption."
           }
         }
+      },
+      "aidr-site-url-input": {
+        "type": "object",
+        "properties": {
+          "fqdn": {
+            "type": "string",
+            "description": "Fully qualified domain name (e.g., 'dealercarsearch.com')"
+          },
+          "path": {
+            "type": "string",
+            "description": "Optional path pattern, supports wildcards (e.g., '/api/*')"
+          },
+          "include_subdomains": {
+            "type": "boolean",
+            "description": "Optional to allow matching of any subdomain of the provided fqdn"
+          }
+        },
+        "required": ["fqdn"],
+        "additionalProperties": false
+      },
+      "aidr-site-url-result": {
+        "type": "object",
+        "properties": {
+          "fqdn": {
+            "type": "string",
+            "description": "Fully qualified domain name"
+          },
+          "path": {
+            "type": "string",
+            "description": "Optional path pattern"
+          },
+          "include_subdomains": {
+            "type": "boolean",
+            "description": "Optional to allow matching of any subdomain of the provided fqdn"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "aidr-site-result": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the site"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the site"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the site"
+          },
+          "category": {
+            "type": "string",
+            "description": "Category the site belongs to"
+          },
+          "source": {
+            "type": "string",
+            "enum": ["crowdstrike", "user"],
+            "description": "Source of the site (CrowdStrike-provided or user-created)"
+          },
+          "urls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/aidr-site-url-result"
+            },
+            "description": "List of URLs associated with the site"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "aidr-site-search": {
+        "type": "object",
+        "description": "List or filter/search site records.",
+        "properties": {
+          "filter": {
+            "type": "object",
+            "properties": {
+              "created_at": {
+                "description": "Only records where created_at equals this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__gt": {
+                "description": "Only records where created_at is greater than this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__gte": {
+                "description": "Only records where created_at is greater than or equal to this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__lt": {
+                "description": "Only records where created_at is less than this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__lte": {
+                "description": "Only records where created_at is less than or equal to this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at": {
+                "description": "Only records where updated_at equals this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__gt": {
+                "description": "Only records where updated_at is greater than this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__gte": {
+                "description": "Only records where updated_at is greater than or equal to this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__lt": {
+                "description": "Only records where updated_at is less than this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__lte": {
+                "description": "Only records where updated_at is less than or equal to this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "source": {
+                "description": "Only records where source is equal to the value",
+                "type": "string",
+                "enum": ["crowdstrike", "user"]
+              },
+              "source__in": {
+                "description": "Only records where source equals one of the provided values.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": ["crowdstrike", "user"]
+                }
+              },
+              "category": {
+                "description": "Only records where category is equal to the value",
+                "type": "string"
+              },
+              "category__contains": {
+                "description": "Only records where category includes each substring.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "A substring to check for."
+                }
+              },
+              "category__in": {
+                "description": "Only records where category equals one of the provided substrings.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "A substring to check for."
+                }
+              },
+              "name": {
+                "description": "Only records where name is equal to the value",
+                "type": "string"
+              },
+              "name__contains": {
+                "description": "Only records where name includes each substring.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "A substring to check for."
+                }
+              },
+              "name__in": {
+                "description": "Only records where name equals one of the provided substrings.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "A substring to check for."
+                }
+              }
+            }
+          },
+          "last": {
+            "description": "Reflected value from a previous response to obtain the next page of results.",
+            "type": "string"
+          },
+          "order": {
+            "description": "Order results asc(ending) or desc(ending).",
+            "enum": ["asc", "desc"],
+            "type": "string"
+          },
+          "order_by": {
+            "description": "Which field to order results by.",
+            "enum": [
+              "id",
+              "name",
+              "category",
+              "source",
+              "created_at",
+              "updated_at"
+            ],
+            "type": "string"
+          },
+          "size": {
+            "description": "Maximum results to include in the response.",
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "aidr-site-search-result": {
+        "type": "object",
+        "properties": {
+          "sites": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/aidr-site-result"
+            }
+          },
+          "count": {
+            "type": "integer",
+            "description": "Total number of sites"
+          },
+          "last": {
+            "type": "string",
+            "description": "Pagination cursor"
+          }
+        }
+      },
+      "aidr-sitecollection-result": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the site collection"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the site collection"
+          },
+          "site_selections": {
+            "type": "object",
+            "description": "Map of site IDs to selection status",
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          },
+          "category_auto_sync": {
+            "type": "object",
+            "description": "Map of category names to auto-sync status",
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          },
+          "selections_updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when selections were last modified"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "aidr-sitecollection-search": {
+        "type": "object",
+        "description": "List or filter/search site collection records.",
+        "properties": {
+          "filter": {
+            "type": "object",
+            "properties": {
+              "created_at": {
+                "description": "Only records where created_at equals this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__gt": {
+                "description": "Only records where created_at is greater than this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__gte": {
+                "description": "Only records where created_at is greater than or equal to this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__lt": {
+                "description": "Only records where created_at is less than this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__lte": {
+                "description": "Only records where created_at is less than or equal to this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at": {
+                "description": "Only records where updated_at equals this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__gt": {
+                "description": "Only records where updated_at is greater than this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__gte": {
+                "description": "Only records where updated_at is greater than or equal to this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__lt": {
+                "description": "Only records where updated_at is less than this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__lte": {
+                "description": "Only records where updated_at is less than or equal to this value.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "name": {
+                "description": "Only records where name is equal to the value",
+                "type": "string"
+              },
+              "name__contains": {
+                "description": "Only records where name includes each substring.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "A substring to check for."
+                }
+              },
+              "name__in": {
+                "description": "Only records where name equals one of the provided substrings.",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "A substring to check for."
+                }
+              }
+            }
+          },
+          "last": {
+            "description": "Reflected value from a previous response to obtain the next page of results.",
+            "type": "string"
+          },
+          "order": {
+            "description": "Order results asc(ending) or desc(ending).",
+            "enum": ["asc", "desc"],
+            "type": "string"
+          },
+          "order_by": {
+            "description": "Which field to order results by.",
+            "enum": ["id", "name", "created_at", "updated_at"],
+            "type": "string"
+          },
+          "size": {
+            "description": "Maximum results to include in the response.",
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "aidr-sitecollection-search-result": {
+        "type": "object",
+        "properties": {
+          "collections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/aidr-sitecollection-result"
+            }
+          },
+          "count": {
+            "type": "integer",
+            "description": "Total number of site collections"
+          },
+          "last": {
+            "type": "string",
+            "description": "Pagination cursor"
+          }
+        }
+      },
+      "aidr-guard-app-access-result": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["allowed", "blocked", "redirected", "ignored"],
+            "description": "Action to take for this app access"
+          },
+          "redirect_url": {
+            "type": "string",
+            "description": "URL to redirect to (for blocked or redirected actions)"
+          }
+        },
+        "required": ["action"]
       }
     },
     "securitySchemes": {

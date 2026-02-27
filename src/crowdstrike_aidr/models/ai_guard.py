@@ -2277,6 +2277,29 @@ class Code(BaseModel):
     """
 
 
+class EmojiDataInner(BaseModel):
+    char: Optional[str] = None
+
+    slug: Optional[str] = None
+
+
+class EmojiData(BaseModel):
+    """Details about the detected emojis."""
+
+    action: Optional[str] = None
+    """The action taken by this Detector"""
+
+    emojis: Optional[list[EmojiDataInner]] = None
+
+
+class Emoji(BaseModel):
+    data: Optional[EmojiData] = None
+    """Details about the detected emojis."""
+
+    detected: Optional[bool] = None
+    """Whether or not any emojis were detected."""
+
+
 class Detectors(BaseModel):
     """
     Result of the policy analyzing and input prompt.
@@ -2291,6 +2314,7 @@ class Detectors(BaseModel):
     language: Optional[Language] = None
     topic: Optional[Topic1] = None
     code: Optional[Code] = None
+    emoji: Optional[Emoji] = None
 
 
 class AidrSavedFilterSearchResult(BaseModel):

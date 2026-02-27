@@ -25,4 +25,6 @@
     ruff.enable = true;
     ruff-format.enable = true;
   };
+
+  packages = with pkgs; [basedpyright];
 }
