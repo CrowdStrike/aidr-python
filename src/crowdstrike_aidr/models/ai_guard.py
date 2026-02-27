@@ -2564,7 +2564,7 @@ class GuardChatCompletionsResult(BaseModel):
     """
     The Policy that was used.
     """
-    detectors: Detectors
+    detectors: Detectors | None = None
     """
     Result of the policy analyzing and input prompt.
     """
