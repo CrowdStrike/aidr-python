@@ -26,6 +26,7 @@ class AIGuard(SyncAPIClient):
         model_version: str | Omit = omit,
         source_ip: str | Omit = omit,
         source_location: str | Omit = omit,
+        span_id: str | Omit = omit,
         tenant_id: str | Omit = omit,
         user_id: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters
@@ -64,6 +65,9 @@ class AIGuard(SyncAPIClient):
 
           source_location: Location of user or app or agent.
 
+          span_id: Unique identifier for the span in distributed tracing, used
+              to track and correlate AI events across the request lifecycle.
+
           tenant_id: For gateway-like integrations with multi-tenant support.
 
           user_id: User/Service account id/service account
@@ -90,6 +94,7 @@ class AIGuard(SyncAPIClient):
                     "model_version": model_version,
                     "source_ip": source_ip,
                     "source_location": source_location,
+                    "span_id": span_id,
                     "tenant_id": tenant_id,
                     "user_id": user_id,
                 }

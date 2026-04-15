@@ -1646,9 +1646,17 @@ class AccessRuleResult(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
+    detected: bool | None = None
+    """
+    Whether this rule detected.
+    """
     matched: bool
     """
     Whether this rule's logic evaluated to true for the input.
+    """
+    exclude_prompt_content: bool | None = None
+    """
+    Whether this rule resulted in prompt content being excluded from the logged event.
     """
     action: str
     """
@@ -1658,11 +1666,11 @@ class AccessRuleResult(BaseModel):
     """
     A human-readable name for the rule.
     """
-    logic: Optional[dict[str, Any]] = None
+    logic: dict[str, Any] | None = None
     """
     The JSON logic expression evaluated for this rule.
     """
-    attributes: Optional[dict[str, Any]] = None
+    attributes: dict[str, Any] | None = None
     """
     The input attribute values that were available during rule evaluation.
     """
@@ -2294,6 +2302,41 @@ class Emoji(BaseModel):
     """Whether or not any emojis were detected."""
 
 
+class McpValidationDataEntity(BaseModel):
+    type: str
+    """The type of MCP validation issue detected"""
+
+    analyzer: Optional[str] = None
+    """The analyzer that detected the issue"""
+
+    confidence: Optional[float] = None
+    """Confidence score of the detection"""
+
+    similarity: Optional[float] = None
+    """Similarity score between tool descriptions"""
+
+    value: Optional[str] = None
+    """The value that triggered the detection"""
+
+
+class McpValidationData(BaseModel):
+    """Details about the detected MCP validation issues"""
+
+    action: Optional[str] = None
+    """The action taken by this Detector"""
+
+    entities: Optional[list[McpValidationDataEntity]] = None
+    """Detected MCP validation issues"""
+
+
+class McpValidation(BaseModel):
+    data: Optional[McpValidationData] = None
+    """Details about the detected MCP validation issues"""
+
+    detected: Optional[bool] = None
+    """Whether or not MCP validation issues were detected"""
+
+
 class Detectors(BaseModel):
     """
     Result of the policy analyzing and input prompt.
@@ -2309,6 +2352,7 @@ class Detectors(BaseModel):
     topic: Optional[Topic1] = None
     code: Optional[Code] = None
     emoji: Optional[Emoji] = None
+    mcp_validation: Optional[McpValidation] = None
 
 
 class AidrSavedFilterSearchResult(BaseModel):
