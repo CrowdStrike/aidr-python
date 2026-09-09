@@ -12,7 +12,7 @@ from . import PangeaResponse
 
 class AidrDevice(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     id: Annotated[str, Field(max_length=32, min_length=1)]
     """
@@ -57,7 +57,7 @@ class AidrDeviceTokenInfo(BaseModel):
 
 class AidrDeviceResult(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     id: Annotated[str, Field(max_length=32, min_length=1)]
     """
@@ -185,7 +185,7 @@ class AidrDeviceSearch(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     filter: Optional[Filter] = None
     last: Optional[str] = None
@@ -220,7 +220,7 @@ class AidrDeviceSearchResult(BaseModel):
 
 class AidrMetricOnlyData(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     app_id: Optional[str] = None
     """
@@ -345,7 +345,7 @@ class AidrSavedFilterSearch(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     filter: Optional[Filter1] = None
     last: Optional[str] = None
@@ -368,7 +368,7 @@ class AidrSavedFilterSearch(BaseModel):
 
 class AidrSavedFilter(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     name: str
     """
@@ -382,7 +382,7 @@ class AidrSavedFilter(BaseModel):
 
 class AidrSavedFilterResult(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     name: str
     """
@@ -487,7 +487,7 @@ class AidrFieldAliasSearch(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     filter: Optional[Filter2] = None
     last: Optional[str] = None
@@ -541,7 +541,7 @@ class Tool(RootModel[str]):
 
 class McpTool(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     server_name: Annotated[str, Field(min_length=1)]
     """
@@ -594,7 +594,7 @@ class ExtraInfo(BaseModel):
 
 class ChatCompletionsGuard(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     guard_input: Annotated[
         dict[str, Any],
@@ -737,6 +737,8 @@ class LanguageDetector(BaseModel):
 
     data: AidrLanguageResult | None = None
     """Details about the detected languages."""
+    analyzed_paths: list[str] | None = None
+    """JSON Path for the elements of the input message that were analyzed"""
 
 
 class Topic(BaseModel):
@@ -834,7 +836,7 @@ class AidrPolicySearch(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     filter: Optional[Filter3] = None
     last: Optional[str] = None
@@ -872,7 +874,7 @@ class AidrPromptItem(BaseModel):
 
 class AidrFieldAlias(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     field_name: str
     """
@@ -894,7 +896,7 @@ class AidrFieldAlias(BaseModel):
 
 class AidrFieldAliasResult(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     field_name: str
     """
@@ -1024,7 +1026,7 @@ class AidrPolicycollectionSearch(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     filter: Optional[Filter4] = None
     last: Optional[str] = None
@@ -1122,7 +1124,7 @@ class AidrCustomlistSearch(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     filter: Optional[Filter5] = None
     last: Optional[str] = None
@@ -1161,7 +1163,7 @@ class Filters(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     collector_id: Optional[str] = None
     """
@@ -1203,7 +1205,7 @@ class Filters(BaseModel):
 
 class AidrSensorInsights(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     is_instance_data: Optional[bool] = None
     """
@@ -1247,7 +1249,7 @@ class AidrGolangDuration2(RootModel[str]):
 
 class Filter6(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     name: Optional[str] = None
     """
@@ -1333,7 +1335,7 @@ class AidrServiceConfigList(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     filter: Optional[Filter6] = None
     last: Optional[str] = None
@@ -1356,14 +1358,14 @@ class AidrServiceConfigList(BaseModel):
 
 class AidrLog(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     event: dict[str, Any]
 
 
 class AidrLogs(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     events: Annotated[list[dict[str, Any]], Field(max_length=100, min_length=1)]
 
@@ -1374,7 +1376,7 @@ class AidrEmpty(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
 
 
@@ -1384,7 +1386,7 @@ class AidrSensorHealth(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     collector_instance_id: str
 
@@ -1404,7 +1406,7 @@ class FilterId(RootModel[str]):
 
 class AidrResourceFieldMapping1(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     path: Annotated[
         str,
@@ -1493,7 +1495,7 @@ class GroupByItem(RootModel[str]):
 
 class AidrMetric(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     start_time: AwareDatetime
     """
@@ -1552,7 +1554,7 @@ class AggregateField(RootModel[str]):
 
 class AidrMetricAggregatesSearchParams(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     start_time: AwareDatetime
     """
@@ -1626,7 +1628,7 @@ class AidrMetricResultDetectorItem1(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     count: Annotated[int, Field(ge=0)]
     """
@@ -1644,7 +1646,7 @@ class AccessRuleResult(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     detected: bool | None = None
     """
@@ -1666,11 +1668,11 @@ class AccessRuleResult(BaseModel):
     """
     A human-readable name for the rule.
     """
-    logic: dict[str, Any] | None = None
+    logic: dict[str, object] | None = None
     """
     The JSON logic expression evaluated for this rule.
     """
-    attributes: dict[str, Any] | None = None
+    attributes: dict[str, object] | None = None
     """
     The input attribute values that were available during rule evaluation.
     """
@@ -1758,7 +1760,7 @@ class RuleRedactionConfig1(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     redaction_type: Literal[
         "mask",
@@ -1846,7 +1848,7 @@ class RuleRedactionConfig2(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     redaction_type: Literal["replacement"]
     """
@@ -1925,7 +1927,7 @@ class RuleRedactionConfig3(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     redaction_type: Literal["partial_masking"]
     """
@@ -2004,7 +2006,7 @@ class RuleRedactionConfig4(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     redaction_type: Literal["hash"]
     """
@@ -2083,7 +2085,7 @@ class RuleRedactionConfig5(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     redaction_type: Literal["fpe"]
     """
@@ -2123,7 +2125,7 @@ class AccessRuleSettings(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     rule_key: Annotated[str, Field(pattern="^([a-zA-Z0-9_][a-zA-Z0-9/|_]*)$")]
     """
@@ -2200,6 +2202,10 @@ class MaliciousPrompt(BaseModel):
     """
     Details about the analyzers.
     """
+    analyzed_paths: Optional[list[str]] = None
+    """
+    JSON Path for the elements of the input message that were analyzed
+    """
 
 
 class ConfidentialAndPiiEntity(BaseModel):
@@ -2210,6 +2216,10 @@ class ConfidentialAndPiiEntity(BaseModel):
     data: Optional[AidrRedactEntityResult] = None
     """
     Details about the detected entities.
+    """
+    analyzed_paths: Optional[list[str]] = None
+    """
+    JSON Path for the elements of the input message that were analyzed
     """
 
 
@@ -2222,6 +2232,10 @@ class MaliciousEntity(BaseModel):
     """
     Details about the detected entities.
     """
+    analyzed_paths: Optional[list[str]] = None
+    """
+    JSON Path for the elements of the input message that were analyzed
+    """
 
 
 class CustomEntity(BaseModel):
@@ -2232,6 +2246,10 @@ class CustomEntity(BaseModel):
     data: Optional[AidrRedactEntityResult] = None
     """
     Details about the detected entities.
+    """
+    analyzed_paths: Optional[list[str]] = None
+    """
+    JSON Path for the elements of the input message that were analyzed
     """
 
 
@@ -2244,6 +2262,10 @@ class SecretAndKeyEntity(BaseModel):
     """
     Details about the detected entities.
     """
+    analyzed_paths: Optional[list[str]] = None
+    """
+    JSON Path for the elements of the input message that were analyzed
+    """
 
 
 class Competitors(BaseModel):
@@ -2254,6 +2276,10 @@ class Competitors(BaseModel):
     data: Optional[AidrSingleEntityResult] = None
     """
     Details about the detected entities.
+    """
+    analyzed_paths: Optional[list[str]] = None
+    """
+    JSON Path for the elements of the input message that were analyzed
     """
 
 
@@ -2266,6 +2292,10 @@ class Topic1(BaseModel):
     """
     Details about the detected topics.
     """
+    analyzed_paths: Optional[list[str]] = None
+    """
+    JSON Path for the elements of the input message that were analyzed
+    """
 
 
 class Code(BaseModel):
@@ -2276,6 +2306,10 @@ class Code(BaseModel):
     data: Optional[AidrLanguageResult] = None
     """
     Details about the detected code.
+    """
+    analyzed_paths: Optional[list[str]] = None
+    """
+    JSON Path for the elements of the input message that were analyzed
     """
 
 
@@ -2300,6 +2334,10 @@ class Emoji(BaseModel):
 
     detected: Optional[bool] = None
     """Whether or not any emojis were detected."""
+    analyzed_paths: Optional[list[str]] = None
+    """
+    JSON Path for the elements of the input message that were analyzed
+    """
 
 
 class McpValidationDataEntity(BaseModel):
@@ -2335,6 +2373,10 @@ class McpValidation(BaseModel):
 
     detected: Optional[bool] = None
     """Whether or not MCP validation issues were detected"""
+    analyzed_paths: Optional[list[str]] = None
+    """
+    JSON Path for the elements of the input message that were analyzed
+    """
 
 
 class Detectors(BaseModel):
@@ -2385,7 +2427,7 @@ class AidrPromptItemListResult(BaseModel):
 
 class AidrSensorInsightsItem(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     updated_at: AwareDatetime
     """
@@ -2524,7 +2566,7 @@ class Rule(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     redact_rule_id: str
     """
@@ -2575,7 +2617,7 @@ class Settings(BaseModel):
 
 class DetectorSetting(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     detector_name: str
     """
@@ -2592,7 +2634,7 @@ class DetectorSetting(BaseModel):
 
 
 class GuardChatCompletionsResult(BaseModel):
-    guard_output: Optional[dict[str, Any]] = None
+    guard_output: Optional[dict[str, object]] = None
     """
     Updated structured prompt.
     """
@@ -2637,7 +2679,7 @@ class UnredactResponse(PangeaResponse):
 
 class AidrDeviceCheckResult(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     device: Optional[AidrDeviceResult] = None
     config: Optional[AidrServiceConfigResult] = None
@@ -2646,7 +2688,7 @@ class AidrDeviceCheckResult(BaseModel):
 
 class AidrPolicy(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     key: str
     """
@@ -2680,7 +2722,7 @@ class AidrPolicy(BaseModel):
 
 class AidrPolicyResult(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     id: Annotated[
         str,
@@ -2772,7 +2814,7 @@ class RecipeConfig(BaseModel):
     """
 
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     name: str
     """

@@ -9,6 +9,7 @@ uvx --from datamodel-code-generator datamodel-codegen \
     --custom-file-header "# ruff: noqa: E501,UP007,UP045" \
     --collapse-root-models \
     --enum-field-as-literal all \
+    --extra-fields allow \
     --output-model-type pydantic_v2.BaseModel \
     --target-python-version 3.13 \
     --use-annotated \

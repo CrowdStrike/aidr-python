@@ -74,6 +74,13 @@
                                       "type": "boolean",
                                       "description": "Whether or not the Malicious Prompt was detected."
                                     },
+                                    "analyzed_paths": {
+                                      "type": "array",
+                                      "description": "JSON Path for the elements of the input message that were analyzed",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
                                     "data": {
                                       "type": "object",
                                       "description": "Details about the analyzers.",
@@ -87,6 +94,13 @@
                                     "detected": {
                                       "type": "boolean",
                                       "description": "Whether or not the PII Entities were detected."
+                                    },
+                                    "analyzed_paths": {
+                                      "type": "array",
+                                      "description": "JSON Path for the elements of the input message that were analyzed",
+                                      "items": {
+                                        "type": "string"
+                                      }
                                     },
                                     "data": {
                                       "type": "object",
@@ -102,6 +116,13 @@
                                       "type": "boolean",
                                       "description": "Whether or not the Malicious Entities were detected."
                                     },
+                                    "analyzed_paths": {
+                                      "type": "array",
+                                      "description": "JSON Path for the elements of the input message that were analyzed",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
                                     "data": {
                                       "type": "object",
                                       "description": "Details about the detected entities.",
@@ -115,6 +136,13 @@
                                     "detected": {
                                       "type": "boolean",
                                       "description": "Whether or not the Custom Entities were detected."
+                                    },
+                                    "analyzed_paths": {
+                                      "type": "array",
+                                      "description": "JSON Path for the elements of the input message that were analyzed",
+                                      "items": {
+                                        "type": "string"
+                                      }
                                     },
                                     "data": {
                                       "type": "object",
@@ -130,6 +158,13 @@
                                       "type": "boolean",
                                       "description": "Whether or not the Secret Entities were detected."
                                     },
+                                    "analyzed_paths": {
+                                      "type": "array",
+                                      "description": "JSON Path for the elements of the input message that were analyzed",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
                                     "data": {
                                       "type": "object",
                                       "description": "Details about the detected entities.",
@@ -143,6 +178,13 @@
                                     "detected": {
                                       "type": "boolean",
                                       "description": "Whether or not the Competitors were detected."
+                                    },
+                                    "analyzed_paths": {
+                                      "type": "array",
+                                      "description": "JSON Path for the elements of the input message that were analyzed",
+                                      "items": {
+                                        "type": "string"
+                                      }
                                     },
                                     "data": {
                                       "type": "object",
@@ -158,6 +200,13 @@
                                       "type": "boolean",
                                       "description": "Whether or not the Languages were detected."
                                     },
+                                    "analyzed_paths": {
+                                      "type": "array",
+                                      "description": "JSON Path for the elements of the input message that were analyzed",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
                                     "data": {
                                       "type": "object",
                                       "description": "Details about the detected languages.",
@@ -171,6 +220,13 @@
                                     "detected": {
                                       "type": "boolean",
                                       "description": "Whether or not the Topics were detected."
+                                    },
+                                    "analyzed_paths": {
+                                      "type": "array",
+                                      "description": "JSON Path for the elements of the input message that were analyzed",
+                                      "items": {
+                                        "type": "string"
+                                      }
                                     },
                                     "data": {
                                       "type": "object",
@@ -186,6 +242,13 @@
                                       "type": "boolean",
                                       "description": "Whether or not any emojis were detected."
                                     },
+                                    "analyzed_paths": {
+                                      "type": "array",
+                                      "description": "JSON Path for the elements of the input message that were analyzed",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
                                     "data": {
                                       "type": "object",
                                       "description": "Details about the detected emojis.",
@@ -200,6 +263,13 @@
                                       "type": "boolean",
                                       "description": "Whether or not the Code was detected."
                                     },
+                                    "analyzed_paths": {
+                                      "type": "array",
+                                      "description": "JSON Path for the elements of the input message that were analyzed",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
                                     "data": {
                                       "type": "object",
                                       "description": "Details about the detected code.",
@@ -213,6 +283,13 @@
                                     "detected": {
                                       "type": "boolean",
                                       "description": "Whether or not MCP validation issues were detected"
+                                    },
+                                    "analyzed_paths": {
+                                      "type": "array",
+                                      "description": "JSON Path for the elements of the input message that were analyzed",
+                                      "items": {
+                                        "type": "string"
+                                      }
                                     },
                                     "data": {
                                       "$ref": "#/components/schemas/aidr-mcp-validation-result"
@@ -633,72 +710,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "prompt-injection-result": {
-        "type": "object",
-        "properties": {
-          "action": {
-            "type": "string",
-            "description": "The action taken by this Detector"
-          },
-          "analyzer_responses": {
-            "type": "array",
-            "description": "Triggered prompt injection analyzers.",
-            "items": {
-              "type": "object",
-              "required": ["analyzer", "confidence"],
-              "properties": {
-                "analyzer": {
-                  "type": "string"
-                },
-                "confidence": {
-                  "type": "number"
-                }
-              }
-            }
-          }
-        }
-      },
-      "classification-result": {
-        "type": "object",
-        "properties": {
-          "action": {
-            "type": "string",
-            "description": "The action taken by this Detector"
-          },
-          "classifications": {
-            "type": "array",
-            "description": "Triggered classifications.",
-            "items": {
-              "type": "object",
-              "required": ["category", "confidence"],
-              "properties": {
-                "category": {
-                  "type": "string"
-                },
-                "confidence": {
-                  "type": "number"
-                }
-              }
-            }
-          }
-        }
-      },
-      "single-entity-result": {
-        "type": "object",
-        "properties": {
-          "action": {
-            "type": "string",
-            "description": "The action taken by this Detector"
-          },
-          "entities": {
-            "type": "array",
-            "description": "Detected entities.",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
       },
       "multimodal-guard": {
         "type": "object",
@@ -1149,6 +1160,12 @@
                 "confidence": {
                   "type": "number",
                   "format": "float"
+                },
+                "category": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
                 }
               }
             }
@@ -1432,7 +1449,6 @@
       },
       "aidr-ls-filter": {
         "type": "string",
-        "maxLength": 5000,
         "description": "Raw LogScale filter string (optional). Field mapping keys (e.g., actor_id, app_name) are automatically transformed to their actual paths (e.g., Vendor.user_id, Vendor.application_name)",
         "example": "actor_id=\"user123\" status=\"allowed\""
       },
@@ -1465,8 +1481,7 @@
             "type": "array",
             "items": {
               "type": "string",
-              "pattern": "^[a-zA-Z0-9_.-]+$",
-              "maxLength": 100
+              "pattern": "^[a-zA-Z0-9_.-]+$"
             },
             "maxItems": 20,
             "description": "Fields to group by (optional)",
@@ -1475,7 +1490,6 @@
           "order_by": {
             "type": "string",
             "pattern": "^[a-zA-Z0-9_.-]+$",
-            "maxLength": 100,
             "description": "Field to sort by (optional)",
             "example": "count"
           },
@@ -1748,6 +1762,14 @@
             "type": "string",
             "format": "date-time",
             "description": "Timestamp when the policy was last updated"
+          }
+        }
+      },
+      "aidr-device-sitecollection-result": {
+        "type": "object",
+        "properties": {
+          "policy": {
+            "$ref": "#/components/schemas/aidr-device-policy-info"
           }
         }
       },
@@ -2059,6 +2081,841 @@
             "items": {
               "$ref": "#/components/schemas/aidr-device-result"
             }
+          }
+        }
+      },
+      "aidr-idp-ad-user-search": {
+        "type": "object",
+        "description": "List or filter/search Active Directory user records.",
+        "properties": {
+          "filter": {
+            "type": "object",
+            "properties": {
+              "user_id": {
+                "type": "string"
+              },
+              "user_id__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "user_id__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "email": {
+                "type": "string"
+              },
+              "email__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "email__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "full_name": {
+                "type": "string"
+              },
+              "full_name__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "full_name__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "domain": {
+                "type": "string"
+              },
+              "domain__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "domain__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "risk_severity": {
+                "type": "string"
+              },
+              "risk_severity__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "risk_severity__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "is_human": {
+                "type": "boolean"
+              },
+              "is_privileged": {
+                "type": "boolean"
+              },
+              "is_watched": {
+                "type": "boolean"
+              },
+              "is_enabled": {
+                "type": "boolean"
+              },
+              "is_locked": {
+                "type": "boolean"
+              },
+              "group_id": {
+                "type": "string",
+                "description": "Filter users that are members of this group ID."
+              },
+              "created_at": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__gt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__gte": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__lt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__lte": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__gt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__gte": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__lt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__lte": {
+                "format": "date-time",
+                "type": "string"
+              }
+            }
+          },
+          "last": {
+            "description": "Pagination cursor",
+            "type": "string"
+          },
+          "order": {
+            "enum": ["asc", "desc"],
+            "type": "string"
+          },
+          "order_by": {
+            "enum": ["email", "full_name", "created_at", "updated_at"],
+            "type": "string"
+          },
+          "size": {
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "aidr-idp-ad-user-search-result": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Pagination count of returned records"
+          },
+          "last": {
+            "type": "string",
+            "description": "Pagination last cursor"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/aidr-idp-ad-user-result"
+            }
+          }
+        }
+      },
+      "aidr-idp-ad-user-result": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "full_name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "is_human": {
+            "type": "boolean"
+          },
+          "is_privileged": {
+            "type": "boolean"
+          },
+          "is_watched": {
+            "type": "boolean"
+          },
+          "risk_severity": {
+            "type": "string"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "user_principal_name": {
+            "type": "string"
+          },
+          "is_enabled": {
+            "type": "boolean"
+          },
+          "is_locked": {
+            "type": "boolean"
+          },
+          "manager_guid": {
+            "type": "string"
+          },
+          "synced_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string"
+          }
+        }
+      },
+      "aidr-idp-ad-group-search": {
+        "type": "object",
+        "description": "List or filter/search Active Directory group records.",
+        "properties": {
+          "filter": {
+            "type": "object",
+            "properties": {
+              "group_id": {
+                "type": "string"
+              },
+              "group_id__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "group_id__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "name": {
+                "type": "string"
+              },
+              "name__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "name__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "group_type": {
+                "type": "string"
+              },
+              "group_type__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "group_type__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "domain": {
+                "type": "string"
+              },
+              "domain__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "domain__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "user_id": {
+                "type": "string",
+                "description": "Filter groups that contain this user ID as a member."
+              },
+              "created_at": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__gt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__gte": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__lt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__lte": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__gt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__gte": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__lt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__lte": {
+                "format": "date-time",
+                "type": "string"
+              }
+            }
+          },
+          "last": {
+            "description": "Pagination cursor",
+            "type": "string"
+          },
+          "order": {
+            "enum": ["asc", "desc"],
+            "type": "string"
+          },
+          "order_by": {
+            "enum": ["name", "created_at", "updated_at"],
+            "type": "string"
+          },
+          "size": {
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "aidr-idp-ad-group-search-result": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Pagination count of returned records"
+          },
+          "last": {
+            "type": "string",
+            "description": "Pagination last cursor"
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/aidr-idp-ad-group-result"
+            }
+          }
+        }
+      },
+      "aidr-idp-ad-group-result": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sam_account_name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "group_type": {
+            "type": "string"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "synced_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string"
+          }
+        }
+      },
+      "aidr-idp-entra-user-search": {
+        "type": "object",
+        "description": "List or filter/search Microsoft Entra ID user records.",
+        "properties": {
+          "filter": {
+            "type": "object",
+            "properties": {
+              "user_id": {
+                "type": "string"
+              },
+              "user_id__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "user_id__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "email": {
+                "type": "string"
+              },
+              "email__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "email__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "full_name": {
+                "type": "string"
+              },
+              "full_name__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "full_name__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "user_type": {
+                "type": "string"
+              },
+              "user_type__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "user_type__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "employee_id": {
+                "type": "string"
+              },
+              "employee_id__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "employee_id__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "employee_type": {
+                "type": "string"
+              },
+              "employee_type__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "employee_type__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "is_enabled": {
+                "type": "boolean"
+              },
+              "group_id": {
+                "type": "string",
+                "description": "Filter users that are members of this group ID."
+              },
+              "created_at": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__gt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__gte": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__lt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__lte": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__gt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__gte": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__lt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__lte": {
+                "format": "date-time",
+                "type": "string"
+              }
+            }
+          },
+          "last": {
+            "description": "Pagination cursor",
+            "type": "string"
+          },
+          "order": {
+            "enum": ["asc", "desc"],
+            "type": "string"
+          },
+          "order_by": {
+            "enum": ["email", "full_name", "created_at", "updated_at"],
+            "type": "string"
+          },
+          "size": {
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "aidr-idp-entra-user-search-result": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Pagination count of returned records"
+          },
+          "last": {
+            "type": "string",
+            "description": "Pagination last cursor"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/aidr-idp-entra-user-result"
+            }
+          }
+        }
+      },
+      "aidr-idp-entra-user-result": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "full_name": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "user_principal_name": {
+            "type": "string"
+          },
+          "is_enabled": {
+            "type": "boolean"
+          },
+          "user_type": {
+            "type": "string"
+          },
+          "company_name": {
+            "type": "string"
+          },
+          "employee_id": {
+            "type": "string"
+          },
+          "employee_type": {
+            "type": "string"
+          },
+          "synced_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string"
+          }
+        }
+      },
+      "aidr-idp-entra-group-search": {
+        "type": "object",
+        "description": "List or filter/search Microsoft Entra ID group records.",
+        "properties": {
+          "filter": {
+            "type": "object",
+            "properties": {
+              "group_id": {
+                "type": "string"
+              },
+              "group_id__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "group_id__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "name": {
+                "type": "string"
+              },
+              "name__contains": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "name__in": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "security_enabled": {
+                "type": "boolean"
+              },
+              "mail_enabled": {
+                "type": "boolean"
+              },
+              "user_id": {
+                "type": "string",
+                "description": "Filter groups that contain this user ID as a member."
+              },
+              "created_at": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__gt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__gte": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__lt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "created_at__lte": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__gt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__gte": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__lt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "updated_at__lte": {
+                "format": "date-time",
+                "type": "string"
+              }
+            }
+          },
+          "last": {
+            "description": "Pagination cursor",
+            "type": "string"
+          },
+          "order": {
+            "enum": ["asc", "desc"],
+            "type": "string"
+          },
+          "order_by": {
+            "enum": ["name", "created_at", "updated_at"],
+            "type": "string"
+          },
+          "size": {
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "aidr-idp-entra-group-search-result": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Pagination count of returned records"
+          },
+          "last": {
+            "type": "string",
+            "description": "Pagination last cursor"
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/aidr-idp-entra-group-result"
+            }
+          }
+        }
+      },
+      "aidr-idp-entra-group-result": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "group_types": {
+            "type": "string"
+          },
+          "security_enabled": {
+            "type": "boolean"
+          },
+          "mail_enabled": {
+            "type": "boolean"
+          },
+          "membership_rule": {
+            "type": "string"
+          },
+          "synced_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string"
           }
         }
       },
@@ -2631,6 +3488,57 @@
             "type": "string",
             "format": "base64",
             "description": "FPE (Format Preserving Encryption) context from a previous guard request. When provided, the encrypted input will be unredacted before processing."
+          },
+          "session_id": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Session identifier for correlating multiple API calls within one logical session."
+          },
+          "conversation_id": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Groups related prompts and responses within a session."
+          },
+          "image_file_name": {
+            "type": "string",
+            "maxLength": 512,
+            "description": "Target process image file name from endpoint network inspection."
+          },
+          "process_sha256": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "Hex-encoded SHA256 of the target process image."
+          },
+          "process_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Sensor process tag identifiers associated with the originating process."
+          },
+          "agent_type": {
+            "type": "string",
+            "enum": ["code-assistant", "chatbot", "subagent"],
+            "description": "Classification of the AI agent originating this request."
+          },
+          "is_agent": {
+            "type": "boolean",
+            "description": "Whether the source is an AI coding or agentic agent."
+          },
+          "process_id": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "OS-level process identifier or caller-defined process key."
+          },
+          "hostname": {
+            "type": "string",
+            "maxLength": 253,
+            "description": "Hostname of the endpoint or server originating this request."
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 253,
+            "description": "Domain of the target AI application or service."
           }
         },
         "additionalProperties": false
@@ -3799,6 +4707,27 @@
                 },
                 "type": "array"
               },
+              "policy_collection_id": {
+                "description": "Only records where policy_collection_id equals this value.",
+                "nullable": false,
+                "type": "string"
+              },
+              "policy_collection_id__contains": {
+                "description": "Only records where policy_collection_id includes each substring.",
+                "items": {
+                  "description": "A substring to check for.",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "policy_collection_id__in": {
+                "description": "Only records where policy_collection_id equals one of the provided values.",
+                "items": {
+                  "description": "A value to check for.",
+                  "type": "string"
+                },
+                "type": "array"
+              },
               "id": {
                 "description": "Only records where id equals this value.",
                 "nullable": false,
@@ -3890,6 +4819,7 @@
               "id",
               "name",
               "collector_type",
+              "policy_collection_id",
               "created_at",
               "updated_at"
             ],
@@ -3902,6 +4832,48 @@
           }
         },
         "required": []
+      },
+      "aidr-service-config-list-item": {
+        "type": "object",
+        "description": "An item returned in the AIDR service config list response.",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "org_id": {
+            "type": "string"
+          },
+          "service_name": {
+            "type": "string"
+          },
+          "project_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "created_at": {
+            "$ref": "#/components/schemas/aidr-timestamp"
+          },
+          "updated_at": {
+            "$ref": "#/components/schemas/aidr-timestamp"
+          },
+          "extra": {
+            "type": "object",
+            "description": "Service-specific fields extracted from the config data.",
+            "properties": {
+              "collector_type": {
+                "type": "string",
+                "description": "The collector type for this config."
+              },
+              "policy_collection_id": {
+                "type": "string",
+                "description": "The policy collection ID configured in settings."
+              }
+            },
+            "additionalProperties": true
+          }
+        }
       },
       "aidr-audit-data-activity": {
         "type": "object",
@@ -4705,6 +5677,28 @@
               },
               "exclude_prompt_content": {
                 "type": "boolean"
+              },
+              "block_message_id": {
+                "type": "string",
+                "description": "ID of a custom block message to display when this rule blocks a request. References a block message created via the block message API."
+              },
+              "detections": {
+                "type": "object",
+                "description": "Optional detection alerting configuration. When enabled, this rule will surface a detection alert when it triggers with a detected action.",
+                "properties": {
+                  "enabled": {
+                    "type": "boolean",
+                    "description": "Whether detection alerting is enabled for this rule effect"
+                  },
+                  "actions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "If specified, only these rule actions will trigger a detection. If omitted or empty, all detected actions trigger."
+                  }
+                },
+                "required": ["enabled"]
               }
             },
             "additionalProperties": false
@@ -4738,6 +5732,28 @@
                   },
                   "exclude_prompt_content": {
                     "type": "boolean"
+                  },
+                  "block_message_id": {
+                    "type": "string",
+                    "description": "ID of a custom block message to display when the else branch blocks a request."
+                  },
+                  "detections": {
+                    "type": "object",
+                    "description": "Optional detection alerting configuration for the else branch.",
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                        "description": "Whether detection alerting is enabled for this else effect"
+                      },
+                      "actions": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "If specified, only these rule actions will trigger a detection."
+                      }
+                    },
+                    "required": ["enabled"]
                   }
                 },
                 "additionalProperties": false
@@ -4947,6 +5963,32 @@
                   }
                 }
               }
+            },
+            "block_message_id": {
+              "type": "string",
+              "description": "ID of a custom block message to display when this detector blocks a request. References a block message created via the block message API."
+            },
+            "transform_message_id": {
+              "type": "string",
+              "description": "ID of a custom transform message to display when this detector transforms a request. References a transform message created via the display message API."
+            },
+            "detections": {
+              "type": "object",
+              "description": "Optional detection alerting configuration. When enabled, this detector will surface a detection alert when it triggers. If `actions` is specified, only those specific actions will generate a detection.",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Whether detection alerting is enabled for this detector"
+                },
+                "actions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "If specified, only these actions (e.g. `block`, `detect_only`, `redact`, `defang`) will trigger a detection. If omitted or empty, all actions trigger a detection when the detector fires."
+                }
+              },
+              "required": ["enabled"]
             }
           },
           "required": ["detector_name", "state", "settings"],
